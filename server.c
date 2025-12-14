@@ -18,10 +18,19 @@ void handle_client(int client_fd) {
   int rc;
 
   while ((rc = read(client_fd, message_buf, sizeof(message_buf))) > 0) {
-    fprintf(stderr, "Read %d bytes", rc);
-    write(client_fd, message_buf, rc);
+    fprintf(stderr, "Read %d bytes\n", rc);
+    int wc = write(client_fd, message_buf, rc);
+    fprintf(stderr, "Write %d bytes\n", wc);
   }
+
+  shutdown(client_fd, SHUT_RDWR);
+  close(client_fd);
+
+  fprintf(stderr, "Client has disconnected.\n");
+
+  exit(EXIT_SUCCESS);
 }
+
 int main(int argc, char **argv) {
 
   struct sockaddr_in server_addr = {};
@@ -86,6 +95,8 @@ int main(int argc, char **argv) {
     // spawn a thread to handle this client_fd
 
     fprintf(stderr, "Client[%d] has connected!\n", client_addr.sin_addr.s_addr);
-    handle_client(client_fd);
+    int pid = fork();
+    if (pid == 0)
+      handle_client(client_fd);
   }
 }
