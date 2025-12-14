@@ -5,4 +5,9 @@ project(protohackers
     LANGUAGES C
 )
 
+set(CMAKE_C_STANDARD 23)
+
+add_compile_options(-Wall -Wextra -pedantic)
+
 add_subdirectory(challenge-1)
+add_subdirectory(challenge-2)

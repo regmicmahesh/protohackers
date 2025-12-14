@@ -1,9 +1,4 @@
 
-
-set(CMAKE_C_STANDARD 23)
-
-add_compile_options(-Wall -Wextra -pedantic)
-
 add_executable(writer-client)
 
 target_sources(writer-client
