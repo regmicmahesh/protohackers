@@ -8,7 +8,7 @@
             "name": "(gdb) Launch: writer-server",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/writer-server",
+            "program": "${workspaceFolder}/build/challenge-1/writer-server",
             "args": [
                 "127.0.0.1",
                 "1313"
@@ -36,7 +36,7 @@
             "name": "(gdb) Launch: writer-client",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/writer-client",
+            "program": "${workspaceFolder}/build/challenge-2/writer-client",
             "args": [
                 "127.0.0.1",
                 "1313"
