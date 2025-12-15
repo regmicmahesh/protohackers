@@ -1,4 +1,3 @@
-#include "lib/lib.h"
 #include <arpa/inet.h>
 #include <asm-generic/socket.h>
 #include <errno.h>
@@ -7,51 +6,58 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <sys/socket.h>
 #include <unistd.h>
 
-#define MAX_MESSAGE_SIZE (1024*1024)
+#include "lib/lib.h"
 
-#define IS_PRIME_RESPONSE "{\"method\":\"isPrime\",\"prime\":true}\n"
-#define IS_NOT_PRIME_RESPONSE "{\"method\":\"isPrime\",\"prime\":false}\n"
+#define PAYLOAD_SIZE 9
 
 void handle_client(int client_fd) {
 
   fprintf(stderr, "Client[%d] has connected.\n", client_fd);
 
-  char message_buf[MAX_MESSAGE_SIZE];
-  memset(message_buf, 0, MAX_MESSAGE_SIZE);
+  char message_buf[PAYLOAD_SIZE];
+  memset(message_buf, 0, PAYLOAD_SIZE);
 
   char ch;
   int i = 0;
-  fprintf(stderr, "Client[%d] Request: ", client_fd);
+
+  price_item_t *price_list = NULL;
+
+  fprintf(stderr, "New client connected.\n");
+
+
   while (read(client_fd, &ch, 1)) {
-    fputc(ch, stderr);
     message_buf[i] = ch;
     i++;
+    fputc(ch, stderr);
 
-    if (ch == EOF) {
-      goto disconnect;
-    }
+    if (i == 9) {
+      struct message_t msg = {};
+      message_init(&msg, message_buf);
 
-    if (ch == '\n') {
-      char *method;
-      double *number;
-      message_buf[i] = '\0';
-      int extraction_success = extract_values(message_buf, &method, &number);
-      if (extraction_success < 1) {
+      if (msg.op == 'I') {
+        fprintf(stderr, "Inserting...\n");
+        price_list =
+            price_list_append(price_list, msg.imsg.timestamp, msg.imsg.price);
+      } else if (msg.op == 'Q') {
+        fprintf(stderr, "Querying...\n");
+        int32_t mean =
+            price_list_mean(price_list, msg.qmsg.mintime, msg.qmsg.maxtime);
+        fprintf(stderr, "Mean: %d\n", mean);
+        int32_t be_mean = htonl(mean);
+        write(client_fd, &be_mean, sizeof(be_mean));
+      } else {
         goto disconnect;
       }
 
       i = 0;
-      int is_prime_number = is_prime(*number);
-      if (is_prime_number) {
-        fprintf(stderr, "Client[%d] Response: %s", client_fd, IS_PRIME_RESPONSE);
-        write(client_fd, IS_PRIME_RESPONSE, strlen(IS_PRIME_RESPONSE));
-      } else {
-        fprintf(stderr, "Client[%d] Response: %s", client_fd, IS_NOT_PRIME_RESPONSE);
-        write(client_fd, IS_NOT_PRIME_RESPONSE, strlen(IS_NOT_PRIME_RESPONSE));
-      }
+    }
+
+    if (ch == EOF) {
+      goto disconnect;
     }
   }
 
@@ -129,3 +135,5 @@ int main(int argc, char **argv) {
       handle_client(client_fd);
   }
 }
+
+recv(int fd, void *buf, size_t n, int flags)

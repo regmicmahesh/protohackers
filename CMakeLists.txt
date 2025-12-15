@@ -11,3 +11,4 @@ add_compile_options(-Wall -Wextra -pedantic)
 
 add_subdirectory(challenge-1)
 add_subdirectory(challenge-2)
+add_subdirectory(challenge-3)
