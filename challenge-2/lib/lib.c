@@ -1,11 +1,12 @@
 
 #include "json.h"
+#include <stdbool.h>
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#define MAX_METHOD_SIZE 128
+#define MAX_METHOD_SIZE 1024
 
 int extract_values(const char *data_string, char **method, double **number) {
 
@@ -39,8 +40,8 @@ int extract_values(const char *data_string, char **method, double **number) {
           (struct json_string_s *)method_val->payload;
 
       if (strncmp(method_val_string->string, "isPrime", 8) != 0) {
-        if (number != NULL)
-          free(number);
+        if (tmp_number != NULL)
+          free(tmp_number);
         return -1;
       }
       tmp_method = (char *)malloc(MAX_METHOD_SIZE * sizeof(char));
@@ -78,9 +79,12 @@ int extract_values(const char *data_string, char **method, double **number) {
   return 1;
 
 error:
-  free(data);
-  free(tmp_method);
-  free(tmp_number);
+  if (data != NULL)
+    free(data);
+  if (tmp_method != NULL)
+    free(tmp_method);
+  if (tmp_number != NULL)
+    free(tmp_number);
   *method = NULL;
   *number = NULL;
   return -1;

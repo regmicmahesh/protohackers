@@ -5,7 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "(gdb) Launch: writer-server",
+            "name": "(gdb) challenge-one",
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/build/challenge-1/writer-server",
@@ -33,38 +33,10 @@
             ]
         },
         {
-            "name": "(gdb) Launch: challenge-two",
+            "name": "(gdb) challenge-two",
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/build/challenge-2/is-prime-server",
-            "args": [
-                "127.0.0.1",
-                "1313"
-            ],
-            "stopAtEntry": false,
-            "cwd": "${fileDirname}",
-            "environment": [],
-            "externalConsole": false,
-            "MIMode": "gdb",
-            "preLaunchTask": "build",
-            "setupCommands": [
-                {
-                    "description": "Enable pretty-printing for gdb",
-                    "text": "-enable-pretty-printing",
-                    "ignoreFailures": true
-                },
-                {
-                    "description": "Set Disassembly Flavor to Intel",
-                    "text": "-gdb-set disassembly-flavor intel",
-                    "ignoreFailures": true
-                }
-            ]
-        },
-        {
-            "name": "(gdb) Launch: writer-client",
-            "type": "cppdbg",
-            "request": "launch",
-            "program": "${workspaceFolder}/build/challenge-1/writer-client",
             "args": [
                 "127.0.0.1",
                 "1313"
