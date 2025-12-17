@@ -26,27 +26,24 @@ void handle_client(int client_fd) {
 
   price_item_t *price_list = NULL;
 
-  fprintf(stderr, "New client connected.\n");
-
-
   while (read(client_fd, &ch, 1)) {
     message_buf[i] = ch;
     i++;
-    fputc(ch, stderr);
 
     if (i == 9) {
       struct message_t msg = {};
       message_init(&msg, message_buf);
+      fprintf(stderr, "Client[%d]: ", client_fd);
+      print_message(stderr, &msg);
 
       if (msg.op == 'I') {
-        fprintf(stderr, "Inserting...\n");
         price_list =
             price_list_append(price_list, msg.imsg.timestamp, msg.imsg.price);
       } else if (msg.op == 'Q') {
-        fprintf(stderr, "Querying...\n");
         int32_t mean =
             price_list_mean(price_list, msg.qmsg.mintime, msg.qmsg.maxtime);
-        fprintf(stderr, "Mean: %d\n", mean);
+        fprintf(stderr, "Client[%d] Write: ", client_fd);
+        fprintf(stderr, "Mean<%d>\n", mean);
         int32_t be_mean = htonl(mean);
         write(client_fd, &be_mean, sizeof(be_mean));
       } else {
@@ -56,13 +53,16 @@ void handle_client(int client_fd) {
       i = 0;
     }
 
-    if (ch == EOF) {
-      goto disconnect;
-    }
+    // If client sends EOF, ignore that and read next byte.
+    // if (ch == EOF) {
+    //   fprintf(stderr, "Client[%d]: Received EOF\n", client_fd);
+    //   goto disconnect;
+    // }
   }
 
 disconnect:
-  fprintf(stderr, "Client[%d] is disconnected.", client_fd);
+  price_list_free(price_list);
+  fprintf(stderr, "Client[%d] is disconnected.\n", client_fd);
   shutdown(client_fd, SHUT_RDWR);
   close(client_fd);
   return;
@@ -130,10 +130,12 @@ int main(int argc, char **argv) {
       continue;
     }
 
+    char client_ip[128];
+    inet_ntop(AF_INET, &client_addr.sin_addr, client_ip, sizeof(client_ip));
+
+
     int pid = fork();
     if (pid == 0)
       handle_client(client_fd);
   }
 }
-
-recv(int fd, void *buf, size_t n, int flags)

@@ -6,8 +6,6 @@
 
 #include "lib.h"
 
-
-
 int message_init(struct message_t *message, void *payload) {
 
   struct message_t tmp_message = *(struct message_t *)payload;
@@ -26,6 +24,18 @@ int message_init(struct message_t *message, void *payload) {
   }
   memcpy(message, &tmp_message, sizeof(*message));
   return 0;
+}
+
+void print_message(FILE *stream, struct message_t *message) {
+  if (message->op == 'I') {
+    fprintf(stream, "I<price=%d timestamp=%d>\n", message->imsg.price,
+            message->imsg.timestamp);
+  } else if (message->op == 'Q') {
+    fprintf(stream, "Q<mintime=%d maxtime=%d>\n", message->qmsg.mintime,
+            message->qmsg.maxtime);
+  } else {
+    fprintf(stream, "%c<unknown>\n", message->op);
+  }
 }
 
 price_item_t *price_list_init(int32_t timestamp, int32_t price) {
@@ -65,9 +75,9 @@ int32_t price_list_mean(price_item_t *l, int32_t mintime, int32_t maxtime) {
   return sum / c;
 }
 
-price_item_t* price_list_append(price_item_t *l, int32_t timestamp, int32_t price) {
+price_item_t *price_list_append(price_item_t *l, int32_t timestamp,
+                                int32_t price) {
   price_item_t *new_item = price_list_init(timestamp, price);
   new_item->next = l;
   return new_item;
 }
-

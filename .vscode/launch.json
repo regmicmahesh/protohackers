@@ -33,13 +33,13 @@
             ]
         },
         {
-            "name": "(gdb) challenge-two",
+            "name": "(gdb) challenge-three",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/challenge-2/is-prime-server",
+            "program": "${workspaceFolder}/build/challenge-3/chall-3-server",
             "args": [
-                "127.0.0.1",
-                "1313"
+                "0.0.0.0",
+                "8008"
             ],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
@@ -59,6 +59,6 @@
                     "ignoreFailures": true
                 }
             ]
-        }
+        },
     ]
 }

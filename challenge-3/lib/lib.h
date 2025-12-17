@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include <stdio.h>
 
 #ifndef LIB_H
 #define LIB_H
@@ -20,6 +21,8 @@ struct __attribute__((packed)) message_t {
     struct message_query_t qmsg;
   };
 };
+
+void print_message(FILE *stream, struct message_t *message);
 
 int message_init(struct message_t *message, void *payload);
 
