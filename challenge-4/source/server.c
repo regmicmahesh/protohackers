@@ -104,4 +104,4 @@ void simple_server_register_handler(simple_server_t *server,
                                     void (*handler)(uint32_t client_fd)) {
 
   server->handler = handler;
-};
+}
